@@ -1,6 +1,7 @@
 // Require the functions you need from the SDKs you need
 const { initializeApp } = require("firebase/app");
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
+const { getFirestore, doc, setDoc } = require("firebase/firestore");
 const dotenv = require("dotenv");
 
 // Load environment variables
@@ -32,6 +33,13 @@ const createUserAndSaveToFirestore = async (auth, db, email, password) => {
 
     console.log("User created with UID:", user.uid);
 
+    // Add the user document to Firestore using the user's UID
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      createdAt: new Date().toISOString()
+    });
+
+    console.log("User document created in Firestore");
   } catch (error) {
     console.error("Error creating user or saving to Firestore:", error);
   }
