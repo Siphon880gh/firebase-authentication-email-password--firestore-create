@@ -1,12 +1,13 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { signInWithEmailAndPassword } from "firebase/auth"
+// Require the functions you need from the SDKs you need
+const { initializeApp } = require("firebase/app");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
+const dotenv = require("dotenv");
 
-import dotenv from "dotenv/config"
-// console.log(process.env)
-const {API_KEY, AUTH_DOMAIN, PROJECT_ID, APP_ID, MASTER_EMAIL, MASTER_PASSWORD} = process.env
+// Load environment variables
+dotenv.config();
+
+// Destructure environment variables
+const { API_KEY, AUTH_DOMAIN, PROJECT_ID, APP_ID, MASTER_EMAIL, MASTER_PASSWORD } = process.env;
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -22,6 +23,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app); // Initialize Firebase Auth
 const db = getFirestore(app); // Initialize Firestore
 
+// Function to create a user and add their data to Firestore
+const createUserAndSaveToFirestore = async (auth, db, email, password) => {
+  try {
+    // Create a new user with the provided email and password
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    console.log("User created with UID:", user.uid);
+
+  } catch (error) {
+    console.error("Error creating user or saving to Firestore:", error);
+  }
+};
+
 // Function to log in with email and password
 const loginWithEmailAndPassword = async (auth, email, password) => {
   try {
@@ -35,7 +50,14 @@ const loginWithEmailAndPassword = async (auth, email, password) => {
   }
 };
 
+// Note to toggle the comments on and off for either Logging in or Creating the user:
+
 // Login with email and password
+// const email = MASTER_EMAIL;
+// const password = MASTER_PASSWORD;
+// loginWithEmailAndPassword(auth, email, password);
+
+// Create the user
 const email = MASTER_EMAIL;
 const password = MASTER_PASSWORD;
-loginWithEmailAndPassword(auth, email, password);
+createUserAndSaveToFirestore(auth, db, email, password);
