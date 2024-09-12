@@ -21,3 +21,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app); // Initialize Firebase Auth
 const db = getFirestore(app); // Initialize Firestore
+
+// Function to log in with email and password
+const loginWithEmailAndPassword = async (auth, email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    console.log("User logged in successfully with Firebase Authentication uid:", user.uid);
+  
+  } catch (error) {
+    console.error("Error with logging in or with callback:", error);
+  }
+};
+
+// Login with email and password
+const email = MASTER_EMAIL;
+const password = MASTER_PASSWORD;
+loginWithEmailAndPassword(auth, email, password);
